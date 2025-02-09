@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history to avoid rebase issues
 
       - name: Configure Git
         run: |
@@ -30,4 +32,9 @@ jobs:
         run: |
           git add last_run.txt
           git commit -m "Automated daily commit at $(date)" || exit 0  # Prevents commit failure if no changes
-          git push origin HEAD:main  # Ensure it pushes to the correct branch
+          
+          # Pull latest changes to avoid conflicts
+          git pull --rebase origin main  
+
+          # Push changes
+          git push origin HEAD:main
