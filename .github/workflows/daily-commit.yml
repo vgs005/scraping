@@ -6,7 +6,7 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 permissions:
-  contents: write  # Ensure GitHub Actions can push changes
+  contents: write  # Ensures GitHub Actions can push changes
 
 jobs:
   commit:
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Configure Git (23ds2000055@ds.study.iitm.ac.in)
+      - name: Configure Git
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "23ds2000055@ds.study.iitm.ac.in"
@@ -25,7 +25,9 @@ jobs:
           echo "Last run: $(date)" > last_run.txt  # Always modify the file
 
       - name: Commit and Push Changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub authentication
         run: |
           git add last_run.txt
-          git commit -m "Automated daily commit at $(date)" || echo "No changes to commit"
-          git push
+          git commit -m "Automated daily commit at $(date)" || exit 0  # Prevents commit failure if no changes
+          git push origin HEAD:main  # Ensure it pushes to the correct branch
